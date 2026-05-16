@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Refuse Wizard View -->
+    <record id="view_sale_approval_refuse_wizard" model="ir.ui.view">
+        <field name="name">sale.approval.refuse.wizard.form</field>
+        <field name="model">sale.approval.refuse.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Refuse Sale Order">
+                <group>
+                    <field name="order_id" readonly="1"/>
+                    <field name="reason" placeholder="Please provide a reason for refusal..."/>
+                </group>
+                <footer>
+                    <button name="action_refuse" type="object"
+                            string="Refuse Order" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sale Order Form — Add approval buttons and status -->
+    <record id="view_sale_order_approval_form" model="ir.ui.view">
+        <field name="name">sale.order.approval.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Approval status bar -->
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="approval_state" invisible="not approval_required"
+                       widget="statusbar"
+                       statusbar_visible="pending,approved,refused"/>
+            </xpath>
+
+            <!-- Approve / Refuse buttons -->
+            <xpath expr="//div[@name='button_box']" position="before">
+                <!-- Waiting Approval banner -->
+                <div invisible="approval_state != 'pending'"
+                     class="alert alert-warning mb-0">
+                    <strong>⏳ Waiting for Manager Approval</strong> —
+                    This order requires approval before confirmation.
+                </div>
+
+                <!-- Refused banner -->
+                <div invisible="approval_state != 'refused'"
+                     class="alert alert-danger mb-0">
+                    <strong>✗ Order Refused</strong>
+                    <t t-if="refused_reason"> — <span t-esc="refused_reason"/></t>
+                </div>
+            </xpath>
+
+            <!-- Approve/Refuse action buttons -->
+            <xpath expr="//button[@name='action_confirm']" position="before">
+                <button name="action_approve"
+                        string="Approve"
+                        type="object"
+                        class="btn-success"
+                        invisible="approval_state != 'pending'"
+                        groups="sale.group_sale_manager"/>
+                <button name="action_refuse"
+                        string="Refuse"
+                        type="object"
+                        class="btn-danger"
+                        invisible="approval_state != 'pending'"
+                        groups="sale.group_sale_manager"/>
+            </xpath>
+
+            <!-- Hide confirm button when pending approval -->
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">
+                    state != 'draft' or (approval_required and approval_state == 'pending')
+                </attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Add approval info to sale order list -->
+    <record id="view_sale_order_approval_list" model="ir.ui.view">
+        <field name="name">sale.order.approval.list</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <field name="approval_state"
+                       invisible="not approval_required"
+                       optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

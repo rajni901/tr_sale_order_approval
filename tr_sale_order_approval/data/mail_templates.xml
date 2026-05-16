@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Request Approval Email -->
+    <record id="mail_template_sale_approval_request" model="mail.template">
+        <field name="name">Sale Order: Approval Request</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Approval Required: {{ object.name }}</field>
+        <field name="email_to">{{ object.company_id.email }}</field>
+        <field name="email_from">{{ (object.user_id.email or '') }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family:Arial,sans-serif; padding:20px;">
+                <h3 style="color:#1a1a5e;">Sale Order Approval Required</h3>
+                <p>Dear Manager,</p>
+                <p>The following sale order requires your approval:</p>
+                <table style="width:100%; border-collapse:collapse;">
+                    <tr>
+                        <td style="padding:6px; font-weight:bold;">Order Number</td>
+                        <td style="padding:6px;">{{ object.name }}</td>
+                    </tr>
+                    <tr style="background:#f5f5f5;">
+                        <td style="padding:6px; font-weight:bold;">Customer</td>
+                        <td style="padding:6px;">{{ object.partner_id.name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:6px; font-weight:bold;">Amount</td>
+                        <td style="padding:6px; color:#1a1a5e; font-weight:bold;">
+                            {{ object.currency_id.symbol }} {{ '%.2f' % object.amount_total }}
+                        </td>
+                    </tr>
+                    <tr style="background:#f5f5f5;">
+                        <td style="padding:6px; font-weight:bold;">Sales Person</td>
+                        <td style="padding:6px;">{{ object.user_id.name }}</td>
+                    </tr>
+                </table>
+                <p style="margin-top:16px;">
+                    Please login to Odoo to approve or refuse this order.
+                </p>
+                <p>Regards,<br/>{{ object.user_id.name }}</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- Approved Email -->
+    <record id="mail_template_sale_approval_approved" model="mail.template">
+        <field name="name">Sale Order: Approved</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Approved: {{ object.name }}</field>
+        <field name="email_to">{{ object.user_id.email }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family:Arial,sans-serif; padding:20px;">
+                <h3 style="color:#2e7d32;">✓ Sale Order Approved</h3>
+                <p>Your sale order <strong>{{ object.name }}</strong> has been approved by <strong>{{ object.approved_by.name }}</strong>.</p>
+                <p>Amount: <strong>{{ object.currency_id.symbol }} {{ '%.2f' % object.amount_total }}</strong></p>
+                <p>Regards,<br/>{{ object.approved_by.name }}</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- Refused Email -->
+    <record id="mail_template_sale_approval_refused" model="mail.template">
+        <field name="name">Sale Order: Refused</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Refused: {{ object.name }}</field>
+        <field name="email_to">{{ object.user_id.email }}</field>
+        <field name="body_html" type="html">
+            <div style="font-family:Arial,sans-serif; padding:20px;">
+                <h3 style="color:#d9534f;">✗ Sale Order Refused</h3>
+                <p>Your sale order <strong>{{ object.name }}</strong> has been refused by <strong>{{ object.refused_by.name }}</strong>.</p>
+                <p><strong>Reason:</strong> {{ object.refused_reason }}</p>
+                <p>Please revise and resubmit.</p>
+                <p>Regards,<br/>{{ object.refused_by.name }}</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>
