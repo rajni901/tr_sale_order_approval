@@ -24,7 +24,7 @@
     <record id="view_sale_order_approval_form" model="ir.ui.view">
         <field name="name">sale.order.approval.form</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_quotation_form"/>
+        <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
 
             <!-- Approval status bar -->
@@ -46,13 +46,13 @@
                 <!-- Refused banner -->
                 <div invisible="approval_state != 'refused'"
                      class="alert alert-danger mb-0">
-                    <strong>✗ Order Refused</strong>
-                    <t t-if="refused_reason"> — <span t-esc="refused_reason"/></t>
+                    <strong>✗ Order Refused</strong> —
+                    <field name="refused_reason" readonly="1" nolabel="1"/>
                 </div>
             </xpath>
 
             <!-- Approve/Refuse action buttons -->
-            <xpath expr="//button[@name='action_confirm']" position="before">
+            <xpath expr="//button[@id='action_confirm']" position="before">
                 <button name="action_approve"
                         string="Approve"
                         type="object"
@@ -68,7 +68,7 @@
             </xpath>
 
             <!-- Hide confirm button when pending approval -->
-            <xpath expr="//button[@name='action_confirm']" position="attributes">
+            <xpath expr="//button[@id='action_confirm']" position="attributes">
                 <attribute name="invisible">
                     state != 'draft' or (approval_required and approval_state == 'pending')
                 </attribute>
@@ -81,7 +81,7 @@
     <record id="view_sale_order_approval_list" model="ir.ui.view">
         <field name="name">sale.order.approval.list</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='state']" position="before">
                 <field name="approval_state"

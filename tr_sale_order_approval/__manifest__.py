@@ -20,7 +20,7 @@ Features:
     """,
     'author': 'Technical Rajni',
     'website': 'https://www.technicalrajni.com',
-    'license': 'OPL-1',
+    'license': 'LGPL-3',
     'depends': ['sale', 'mail'],
     'data': [
         'security/sale_approval_security.xml',
@@ -33,6 +33,6 @@ Features:
     'installable': True,
     'application': False,
     'auto_install': False,
-    'price': 15.00,
+    'price': 0.00,
     'currency': 'USD',
 }
